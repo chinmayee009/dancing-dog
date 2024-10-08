@@ -15,7 +15,8 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // Function to send the frame rate to the Flask server
     const sendFrameRateToFlask = (frameRate) => {
-        fetch("http://localhost:5000/update-frame-rate", {
+        const flaskHost = window.location.hostname; // gets the host of the current window
+        fetch("http://${flaskHost}:5000/update-frame-rate", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"
