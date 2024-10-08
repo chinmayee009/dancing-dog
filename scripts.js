@@ -1,30 +1,53 @@
-document.addEventListener("DOMContentLoaded", function() {
-    const girl = document.querySelector('.dancing-girl');
-    let posX = 0;
-    let posY = 0;
-    let directionX = 1;
-    let directionY = 1;
-    const speed = 2;
+document.addEventListener("DOMContentLoaded", function () {
+    const frameRateDisplay = document.createElement("div");
+    frameRateDisplay.style.position = "absolute";
+    frameRateDisplay.style.top = "10px";
+    frameRateDisplay.style.right = "10px";
+    frameRateDisplay.style.padding = "10px";
+    frameRateDisplay.style.backgroundColor = "#000";
+    frameRateDisplay.style.color = "#fff";
+    frameRateDisplay.style.fontSize = "16px";
+    frameRateDisplay.style.zIndex = 1000;
+    document.body.appendChild(frameRateDisplay);
 
-    function moveGirl() {
-        const maxX = window.innerWidth - girl.offsetWidth;
-        const maxY = window.innerHeight - girl.offsetHeight;
+    let frameCount = 0;
+    let lastTime = performance.now();
 
-        posX += directionX * speed;
-        posY += directionY * speed;
+    // Function to send the frame rate to the Flask server
+    const sendFrameRateToFlask = (frameRate) => {
+        fetch("http://localhost:5000/update-frame-rate", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({ frameRate: frameRate })
+        })
+        .catch((error) => console.error("Error sending frame rate:", error));
+    };
 
-        if (posX <= 0 || posX >= maxX) {
-            directionX *= -1;
+    function calculateFrameRate() {
+        const currentTime = performance.now();
+        frameCount++;
+
+        // Calculate elapsed time in seconds
+        const elapsedTime = (currentTime - lastTime) / 1000;
+
+        // Update frame rate every second
+        if (elapsedTime >= 1) {
+            const frameRate = Math.round(frameCount / elapsedTime);
+            frameRateDisplay.textContent = `Frame Rate: ${frameRate} FPS`;
+
+            // Send frame rate to the server
+            sendFrameRateToFlask(frameRate);
+
+            frameCount = 0; // Reset frame count
+            lastTime = currentTime; // Reset last time
         }
-        if (posY <= 0 || posY >= maxY) {
-            directionY *= -1;
-        }
 
-        girl.style.left = posX + 'px';
-        girl.style.top = posY + 'px';
-
-        requestAnimationFrame(moveGirl);
+        // Request the next frame
+        requestAnimationFrame(calculateFrameRate);
     }
 
-    moveGirl();
+    // Start measuring the frame rate
+    calculateFrameRate();
 });
