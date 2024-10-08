@@ -23,6 +23,7 @@ document.addEventListener("DOMContentLoaded", function () {
             },
             body: JSON.stringify({ frameRate: frameRate })
         })
+        .then(response => console.log("Server response:", response.status))
         .catch((error) => console.error("Error sending frame rate:", error));
     };
 
