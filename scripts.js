@@ -87,7 +87,7 @@ document.addEventListener("DOMContentLoaded", function () {
         const data = `Timestamp: ${timestamp}\n` +
                      `Frame Rate: ${frameRate} FPS\n` +
                      `Frame Latency: ${currentFrameLatency.toFixed(2)} ms\n` +
-                     `Click Count: ${clickCount}, Click Latency: ${clickLatency.toFixed(2)} ms, Color Change Latency: ${colorChangeLatency.toFixed(2)} ms\n\n`;
+                     `Click Latency: ${clickLatency.toFixed(2)} ms, Color Change Latency: ${colorChangeLatency.toFixed(2)} ms\n\n`;
 
         const blob = new Blob([data], { type: 'text/plain' });
         const link = document.createElement('a');
