@@ -4,34 +4,64 @@ body, html {
     width: 100%;
     height: 100%;
     display: flex;
+    flex-direction: column;
     justify-content: center;
     align-items: center;
     background-color: #f0f0f0;
+    font-family: Arial, sans-serif; /* Add a default font for better readability */
+    position: relative; /* Added to allow absolute positioning of the button */
 }
 
 .container {
     width: 300px;
     height: 400px;
     position: relative;
+    margin-bottom: 20px;
 }
 
 .dancing-dog {
     width: 100%;
     height: 100%;
-    background: url('/images/dog.gif') no-repeat center center;
+    background: url('dog.gif') no-repeat center center;
     background-size: contain;
-    position: absolute; /* Make sure the element can move relative to the container */
-    animation: square-path 4s infinite; /* Set the animation to use the square path */
-    border: 5px solid #ff0000; /* Solid red border */
-    border-radius: 10px; /* Rounded corners */
-    box-sizing: border-box; /* Padding and border are included in the total width and height */
-
+    position: absolute;
+    animation: square-path 4s infinite linear; /* Added linear timing function for smooth animation */
+    border: 5px solid #ff0000;
+    border-radius: 10px;
+    box-sizing: border-box;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3); /* Added shadow for depth */
 }
 
 @keyframes square-path {
-    0%   { transform: translate(0, 0); }          /* Starting position (Top-Left) */
-    25%  { transform: translate(200px, 0); }      /* Move to Top-Right */
-    50%  { transform: translate(200px, 200px); }  /* Move to Bottom-Right */
-    75%  { transform: translate(0, 200px); }      /* Move to Bottom-Left */
-    100% { transform: translate(0, 0); }          /* Back to Starting position */
+    0%   { transform: translate(0, 0); }
+    25%  { transform: translate(200px, 0); }
+    50%  { transform: translate(200px, 200px); }
+    75%  { transform: translate(0, 200px); }
+    100% { transform: translate(0, 0); }
+}
+
+#auto-click-button {
+    position: absolute; /* Changed to absolute positioning */
+    top: 10px; /* Distance from the top */
+    left: 10px; /* Distance from the left */
+    padding: 10px 20px;
+    font-size: 16px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+#auto-click-button:hover {
+    background-color: #45a049;
+}
+
+/* Optional: Add responsiveness */
+@media (max-width: 600px) {
+    .container {
+        width: 90%; /* Make the container responsive */
+        height: auto; /* Allow height to adjust based on content */
+    }
 }
