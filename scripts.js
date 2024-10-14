@@ -25,15 +25,19 @@ document.addEventListener("DOMContentLoaded", function () {
 
     let frameCount = 0;
     let lastTime = performance.now();
+    let lastFrameTime = performance.now();
+    let currentFrameLatency = 0;
 
-    let lastFrameTime = performance.now(); // Time of the last frame for latency calculation
-    let currentFrameLatency = 0; // Store the current frame latency
+    // Arrays to store metrics over a minute
+    let frameRateValues = [];
+    let frameLatencyValues = [];
+    let clickLatencyValues = [];
 
     // Initialize click data variables
     let clickCount = 0;
     let lastClickTime = performance.now();
-    let clickLatency = 0; // Store the current click latency
-    let colorChangeLatency = 0; // Store the color change latency
+    let clickLatency = 0;
+    let colorChangeLatency = 0;
 
     // Define colors for button
     const colors = ["#ff0000", "#00ff00", "#0000ff", "#ffff00", "#ff00ff", "#00ffff"];
@@ -43,76 +47,99 @@ document.addEventListener("DOMContentLoaded", function () {
         const currentTime = performance.now();
         frameCount++;
 
-        // Calculate frame latency (time to render this frame)
+        // Calculate frame latency
         currentFrameLatency = currentTime - lastFrameTime;
-        lastFrameTime = currentTime; // Update last frame time
+        lastFrameTime = currentTime;
 
-        // Request the next frame
+        // Collect values
+        const frameRate = Math.round(frameCount / ((performance.now() - lastTime) / 1000));
+        frameRateValues.push(frameRate);
+        frameLatencyValues.push(currentFrameLatency);
+
+        // Request next frame
         requestAnimationFrame(calculateFrameRate);
     }
 
-    // Auto-click functionality
     const autoClickButton = document.getElementById('auto-click-button');
 
     function simulateClick() {
         if (autoClickButton) {
             const currentTime = performance.now();
-            clickLatency = currentTime - lastClickTime; // Calculate click latency
+            clickLatency = currentTime - lastClickTime;
             lastClickTime = currentTime;
 
-            // Increment click count before changing the text
+            // Increment click count
             clickCount++;
 
-            // Change button color and capture the time it takes for the UI to update
+            // Change button color and capture color change latency
             autoClickButton.style.backgroundColor = colors[currentColorIndex];
-            currentColorIndex = (currentColorIndex + 1) % colors.length; // Cycle through colors
-            
-            // Capture the time after the color change
+            currentColorIndex = (currentColorIndex + 1) % colors.length;
             const colorChangeStartTime = performance.now();
-            // Change button text to display the click count
             autoClickButton.textContent = `Clicked ${clickCount} times`;
-            colorChangeLatency = performance.now() - colorChangeStartTime; // Calculate color change latency
+            colorChangeLatency = performance.now() - colorChangeStartTime;
 
-            // Save click and frame data
-            saveDataToFile(); // Save both click and frame data
+            // Save click latency
+            clickLatencyValues.push(clickLatency);
+
+            // No need to save to file every click
         }
+    }
+
+    // Function to calculate min, max, and average
+    function calculateStats(values) {
+        const min = Math.min(...values);
+        const max = Math.max(...values);
+        const avg = values.reduce((sum, val) => sum + val, 0) / values.length;
+        return { min, max, avg };
     }
 
     function saveDataToFile() {
         const timestamp = new Date().toISOString();
-        const frameRate = Math.round(frameCount / ((performance.now() - lastTime) / 1000));
-        
+
+        // Calculate statistics for the last minute
+        const frameRateStats = calculateStats(frameRateValues);
+        const frameLatencyStats = calculateStats(frameLatencyValues);
+        const clickLatencyStats = calculateStats(clickLatencyValues);
+
         // Create data string
         const data = `Timestamp: ${timestamp}\n` +
-                     `Frame Rate: ${frameRate} FPS\n` +
-                     `Frame Latency: ${currentFrameLatency.toFixed(2)} ms\n` +
-                     `Click Latency: ${clickLatency.toFixed(2)} ms\n` +
-                     `Color Change Latency: ${colorChangeLatency.toFixed(2)} ms\n`;
+                     `Frame Rate: min ${frameRateStats.min} FPS, max ${frameRateStats.max} FPS, avg ${frameRateStats.avg.toFixed(2)} FPS\n` +
+                     `Frame Latency: min ${frameLatencyStats.min.toFixed(2)} ms, max ${frameLatencyStats.max.toFixed(2)} ms, avg ${frameLatencyStats.avg.toFixed(2)} ms\n` +
+                     `Click Latency: min ${clickLatencyStats.min.toFixed(2)} ms, max ${clickLatencyStats.max.toFixed(2)} ms, avg ${clickLatencyStats.avg.toFixed(2)} ms\n`;
 
         const blob = new Blob([data], { type: 'text/plain' });
         const link = document.createElement('a');
         link.href = URL.createObjectURL(blob);
-        link.download = 'data_log.txt'; // Single file for both data
+        link.download = 'data_log.txt';
         link.click();
         URL.revokeObjectURL(link.href);
+
+        // Reset arrays for the next minute
+        frameRateValues = [];
+        frameLatencyValues = [];
+        clickLatencyValues = [];
     }
 
     function updateDisplays() {
         // Update displays
-        frameRateDisplay.textContent = `Frame Rate: ${Math.round(frameCount / ((performance.now() - lastTime) / 1000))} FPS, Frame Latency: ${currentFrameLatency.toFixed(2)} ms`;
+        const frameRate = Math.round(frameCount / ((performance.now() - lastTime) / 1000));
+        frameRateDisplay.textContent = `Frame Rate: ${frameRate} FPS, Frame Latency: ${currentFrameLatency.toFixed(2)} ms`;
         clickDataDisplay.textContent = `Click Latency: ${clickLatency.toFixed(2)} ms`;
 
         // Reset counts and last time
-        frameCount = 0; // Reset frame count
-        lastTime = performance.now(); // Reset last time
+        frameCount = 0;
+        lastTime = performance.now();
     }
 
     // Simulate a click every 10 seconds
     setInterval(simulateClick, 10000);
 
-    // Update displays every 1 seconds
+    // Update displays every second
     setInterval(updateDisplays, 1000);
 
-    // Start measuring the frame rate
+    // Save data and calculate averages every minute
+    setInterval(saveDataToFile, 60000);
+
+    // Start measuring frame rate
     calculateFrameRate();
 });
