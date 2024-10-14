@@ -110,8 +110,8 @@ document.addEventListener("DOMContentLoaded", function () {
     // Simulate a click every 10 seconds
     setInterval(simulateClick, 10000);
 
-    // Update displays every 10 seconds
-    setInterval(updateDisplays, 10000);
+    // Update displays every 1 seconds
+    setInterval(updateDisplays, 1000);
 
     // Start measuring the frame rate
     calculateFrameRate();
