@@ -62,17 +62,15 @@ document.addEventListener("DOMContentLoaded", function () {
 
             clickCount++;
 
-            // Change button color and measure the time it takes for the UI to update
+            // Change button color and capture the time it takes for the UI to update
             autoClickButton.style.backgroundColor = colors[currentColorIndex];
             currentColorIndex = (currentColorIndex + 1) % colors.length; // Cycle through colors
             
             // Capture the time after the color change
             const colorChangeStartTime = performance.now();
-            autoClickButton.click();
-            colorChangeLatency = performance.now() - colorChangeStartTime; // Calculate color change latency
-
-            // Update button text
+            // Change button text to display the click count
             autoClickButton.textContent = `Clicked ${clickCount} times`;
+            colorChangeLatency = performance.now() - colorChangeStartTime; // Calculate color change latency
 
             // Save click and frame data
             saveDataToFile(); // Save both click and frame data
@@ -87,7 +85,8 @@ document.addEventListener("DOMContentLoaded", function () {
         const data = `Timestamp: ${timestamp}\n` +
                      `Frame Rate: ${frameRate} FPS\n` +
                      `Frame Latency: ${currentFrameLatency.toFixed(2)} ms\n` +
-                     `Click Latency: ${clickLatency.toFixed(2)} ms\n`;
+                     `Click Latency: ${clickLatency.toFixed(2)} ms\n` +
+                     `Color Change Latency: ${colorChangeLatency.toFixed(2)} ms\n`;
 
         const blob = new Blob([data], { type: 'text/plain' });
         const link = document.createElement('a');
@@ -104,11 +103,10 @@ document.addEventListener("DOMContentLoaded", function () {
 
         // Reset counts and last time
         frameCount = 0; // Reset frame count
-        clickCount = 0; // Reset click count    
         lastTime = performance.now(); // Reset last time
     }
 
-    // Simulate a click every 5 seconds
+    // Simulate a click every 10 seconds
     setInterval(simulateClick, 10000);
 
     // Update displays every 10 seconds
