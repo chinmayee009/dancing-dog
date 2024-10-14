@@ -92,7 +92,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
         // Reset counts and last time
         frameCount = 0; // Reset frame count
-        clickCount = 0; // Reset click count
+        clickCount = 0; // Reset click count    
         lastTime = performance.now(); // Reset last time
     }
 
