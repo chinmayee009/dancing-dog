@@ -33,6 +33,11 @@ document.addEventListener("DOMContentLoaded", function () {
     let clickCount = 0;
     let lastClickTime = performance.now();
     let clickLatency = 0; // Store the current click latency
+    let colorChangeLatency = 0; // Store the color change latency
+
+    // Define colors for button
+    const colors = ["#ff0000", "#00ff00", "#0000ff", "#ffff00", "#ff00ff", "#00ffff"];
+    let currentColorIndex = 0;
 
     function calculateFrameRate() {
         const currentTime = performance.now();
@@ -56,13 +61,20 @@ document.addEventListener("DOMContentLoaded", function () {
             lastClickTime = currentTime;
 
             clickCount++;
+
+            // Change button color and measure the time it takes for the UI to update
+            autoClickButton.style.backgroundColor = colors[currentColorIndex];
+            currentColorIndex = (currentColorIndex + 1) % colors.length; // Cycle through colors
+            
+            // Capture the time after the color change
+            const colorChangeStartTime = performance.now();
             autoClickButton.click();
-            console.log(`Click ${clickCount}: Latency ${clickLatency.toFixed(2)}ms`);
+            colorChangeLatency = performance.now() - colorChangeStartTime; // Calculate color change latency
 
             // Update button text
             autoClickButton.textContent = `Clicked ${clickCount} times`;
 
-            // Save click data
+            // Save click and frame data
             saveDataToFile(); // Save both click and frame data
         }
     }
@@ -75,7 +87,7 @@ document.addEventListener("DOMContentLoaded", function () {
         const data = `Timestamp: ${timestamp}\n` +
                      `Frame Rate: ${frameRate} FPS\n` +
                      `Frame Latency: ${currentFrameLatency.toFixed(2)} ms\n` +
-                     `Click Count: ${clickCount}, Click Latency: ${clickLatency.toFixed(2)} ms\n\n`;
+                     `Click Count: ${clickCount}, Click Latency: ${clickLatency.toFixed(2)} ms, Color Change Latency: ${colorChangeLatency.toFixed(2)} ms\n\n`;
 
         const blob = new Blob([data], { type: 'text/plain' });
         const link = document.createElement('a');
@@ -88,7 +100,7 @@ document.addEventListener("DOMContentLoaded", function () {
     function updateDisplays() {
         // Update displays
         frameRateDisplay.textContent = `Frame Rate: ${Math.round(frameCount / ((performance.now() - lastTime) / 1000))} FPS, Frame Latency: ${currentFrameLatency.toFixed(2)} ms`;
-        clickDataDisplay.textContent = `Click Count: ${clickCount}, Click Latency: ${clickLatency.toFixed(2)} ms`;
+        clickDataDisplay.textContent = `Click Count: ${clickCount}, Click Latency: ${clickLatency.toFixed(2)} ms, Color Change Latency: ${colorChangeLatency.toFixed(2)} ms`;
 
         // Reset counts and last time
         frameCount = 0; // Reset frame count
