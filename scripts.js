@@ -100,7 +100,7 @@ document.addEventListener("DOMContentLoaded", function () {
     function updateDisplays() {
         // Update displays
         frameRateDisplay.textContent = `Frame Rate: ${Math.round(frameCount / ((performance.now() - lastTime) / 1000))} FPS, Frame Latency: ${currentFrameLatency.toFixed(2)} ms`;
-        clickDataDisplay.textContent = `Click Count: ${clickCount}, Click Latency: ${clickLatency.toFixed(2)} ms, Color Change Latency: ${colorChangeLatency.toFixed(2)} ms`;
+        clickDataDisplay.textContent = `Click Latency: ${clickLatency.toFixed(2)} ms, Color Change Latency: ${colorChangeLatency.toFixed(2)} ms`;
 
         // Reset counts and last time
         frameCount = 0; // Reset frame count
@@ -109,7 +109,7 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     // Simulate a click every 5 seconds
-    setInterval(simulateClick, 5000);
+    setInterval(simulateClick, 10000);
 
     // Update displays every 10 seconds
     setInterval(updateDisplays, 10000);
