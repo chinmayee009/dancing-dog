@@ -60,6 +60,7 @@ document.addEventListener("DOMContentLoaded", function () {
             clickLatency = currentTime - lastClickTime; // Calculate click latency
             lastClickTime = currentTime;
 
+            // Increment click count before changing the text
             clickCount++;
 
             // Change button color and capture the time it takes for the UI to update
