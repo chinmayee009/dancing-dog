@@ -87,7 +87,7 @@ document.addEventListener("DOMContentLoaded", function () {
         const data = `Timestamp: ${timestamp}\n` +
                      `Frame Rate: ${frameRate} FPS\n` +
                      `Frame Latency: ${currentFrameLatency.toFixed(2)} ms\n` +
-                     `Click Latency: ${clickLatency.toFixed(2)} ms, Color Change Latency: ${colorChangeLatency.toFixed(2)} ms\n\n`;
+                     `Click Latency: ${clickLatency.toFixed(2)} ms\n`;
 
         const blob = new Blob([data], { type: 'text/plain' });
         const link = document.createElement('a');
@@ -100,7 +100,7 @@ document.addEventListener("DOMContentLoaded", function () {
     function updateDisplays() {
         // Update displays
         frameRateDisplay.textContent = `Frame Rate: ${Math.round(frameCount / ((performance.now() - lastTime) / 1000))} FPS, Frame Latency: ${currentFrameLatency.toFixed(2)} ms`;
-        clickDataDisplay.textContent = `Click Latency: ${clickLatency.toFixed(2)} ms, Color Change Latency: ${colorChangeLatency.toFixed(2)} ms`;
+        clickDataDisplay.textContent = `Click Latency: ${clickLatency.toFixed(2)} ms`;
 
         // Reset counts and last time
         frameCount = 0; // Reset frame count
